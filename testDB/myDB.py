@@ -150,5 +150,48 @@ LINKS = {   #
   'Б1.В.03.01' : ['УК-6', 'ПК-3 ', 'ПК-4']
 }
 
-for name in MODULES.values():
-  print( name )
+def get_name_module(code):
+    if code in MODULES:
+        return MODULES[code]
+    else:
+        return f"unknow module [{code}]"
+
+def get_list_courses_module(code):
+    ret_dict = {}
+    if code in MODULES:
+        for code_course in SUBJECTS.keys():
+            if code_course[0:len(code)] == code:
+                ret_dict[code_course] = SUBJECTS[code_course]
+    return ret_dict
+
+def get_name_course(code):
+  if code in SUBJECTS:
+    return SUBJECTS[code]
+  else:
+    return f"unknow course [{code}]"
+
+def get_name_competence(code):
+    if code in COMPETENCES:
+        return COMPETENCES[code]
+    else:
+        return f"unknow competence [{code}]"
+
+def get_name_indicator(code):
+    if code in INDICATORS:
+        return INDICATORS[code]
+    else:
+        return f"unknow indicator [{code}]"
+
+def get_list_indicators_competence(code):
+    ret_dict = {}
+    if code in COMPETENCES:
+        for code_indicator in INDICATORS.keys():
+            if code_indicator[1:(len(code)+1)] == code:
+                ret_dict[code_indicator] = INDICATORS[code_indicator]
+    return ret_dict
+
+def get_list_competences_course(code):
+    if code in LINKS:
+        return LINKS[code]
+    else:
+        return f"invalid course [{code}]"
