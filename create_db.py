@@ -25,25 +25,46 @@ if os.path.exists(file_DB):
 conn = sqlite3.connect(file_DB)
 c = conn.cursor()
 
-create_table = "CREATE TABLE [modules] ( [ModuleID] INTEGER PRIMARY KEY AUTOINCREMENT, [ModuleCode] TEXT NOT NULL, [ModuleName] TEXT NOT NULL)"
+create_table = """CREATE TABLE IF NOT EXISTS [modules] 
+    ([ModuleID] INTEGER PRIMARY KEY AUTOINCREMENT, 
+    [ModuleCode] TEXT NOT NULL, 
+    [ModuleName] TEXT NOT NULL)"""
+
 c.execute(create_table)
 for row in db.MODULES:
   rec = (row[0], row[1], row[2])
   c.execute("INSERT INTO modules VALUES (?,?,?);", rec)
 
-create_table = "CREATE TABLE [subjects] ( [SubjectID] INTEGER PRIMARY KEY AUTOINCREMENT, [SubjectCode] TEXT NOT NULL, [SubjectName] TEXT NOT NULL, [ModuleID] INTEGER NOT NULL,  FOREIGN KEY(ModuleID) REFERENCES Modules(ModuleID) ON DELETE CASCADE)"
+create_table = """CREATE TABLE IF NOT EXISTS [subjects] 
+    ([SubjectID] INTEGER PRIMARY KEY AUTOINCREMENT, 
+    [SubjectCode] TEXT NOT NULL, 
+    [SubjectName] TEXT NOT NULL, 
+    [ModuleID] INTEGER NOT NULL,  
+    FOREIGN KEY(SubjectID) REFERENCES Modules(ModuleID) ON DELETE CASCADE)"""
+
 c.execute(create_table)
 for row in db.SUBJECTS:
   rec = (row[0], row[1], row[2], row[3])
   c.execute("INSERT INTO subjects VALUES (?,?,?,?);", rec)
 
-create_table = "CREATE TABLE [competences] ( [CompetenceID] INTEGER PRIMARY KEY AUTOINCREMENT, [CompetenceCode] TEXT NOT NULL, [CompetenceName] TEXT NOT NULL)"
+create_table = """CREATE TABLE IF NOT EXISTS [competences] 
+    ([CompetenceID] INTEGER PRIMARY KEY AUTOINCREMENT, 
+    [CompetenceCode] TEXT NOT NULL, 
+    [CompetenceName] TEXT NOT NULL)"""
+
 c.execute(create_table)
 for row in db.COMPETENCES:
   rec = (row[0], row[1], row[2])
   c.execute("INSERT INTO competences VALUES (?,?,?);", rec)
 
-create_table = "CREATE TABLE [indicators] ( [IndicatorID] INTEGER PRIMARY KEY AUTOINCREMENT, [IndicatorCode] TEXT NOT NULL, [IndicatorName] TEXT NOT NULL, [CompetenceID] INTEGER NOT NULL,  FOREIGN KEY(CompetenceID) REFERENCES Competences(CompetenceID) ON DELETE CASCADE)"
+create_table = """CREATE TABLE IF NOT EXISTS [indicators] 
+    ([IndicatorID] INTEGER PRIMARY KEY AUTOINCREMENT, 
+    [IndicatorCode] TEXT NOT NULL, 
+    [IndicatorName] TEXT NOT NULL, 
+    [CompetenceID] INTEGER NOT NULL,  
+    FOREIGN KEY(CompetenceID) REFERENCES Competences(CompetenceID) 
+    ON DELETE CASCADE)"""
+
 c.execute(create_table)
 for row in db.INDICATORS:
   rec = (row[0], row[1], row[2], row[3])
