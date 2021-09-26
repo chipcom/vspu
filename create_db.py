@@ -1,22 +1,7 @@
 import os
 import sqlite3
 import pprint
-from testDB import sqlite3_create_db as db
-
-# pprint.pprint(db.get_name_module('Б1.О.01'))
-# pprint.pprint(db.get_name_course('Б1.О.02.01'))
-# pprint.pprint(db.get_list_courses_module('Б1.О.01'))
-# pprint.pprint(db.get_name_competence('ОПК-1'))
-# pprint.pprint(db.get_name_indicator('ИОПК-6.3'))
-# pprint.pprint(db.get_list_indicators_competence('УК-1'))
-# pprint.pprint(db.get_list_competences_course('Б1.О.01.01'))
-# # error
-# print(db.get_name_module('Б1.О.10'))
-# print(db.get_name_course('Б1.О.02.25'))
-# print(db.get_list_courses_module('Б1.О.10'))
-# print(db.get_name_competence('ОПК-20'))
-# print(db.get_name_indicator('ИОПК-6.23'))
-# print(db.get_list_indicators_competence('УК-10'))
+from DB import sqlite3_create_db as db
 
 file_DB = 'learn.db'
 if os.path.exists(file_DB):
@@ -25,9 +10,19 @@ if os.path.exists(file_DB):
 conn = sqlite3.connect(file_DB)
 c = conn.cursor()
 
+create_table = """CREATE TABLE IF NOT EXISTS [programs] 
+    ([ProgramID] INTEGER PRIMARY KEY AUTOINCREMENT, 
+    [ProgramCode] TEXT NOT NULL UNIQUE, 
+    [ProgramName] TEXT NOT NULL)"""
+
+c.execute(create_table)
+for row in db.PROGRAMS:
+  rec = (row[0], row[1], row[2])
+  c.execute("INSERT INTO programs VALUES (?,?,?);", rec)
+
 create_table = """CREATE TABLE IF NOT EXISTS [modules] 
     ([ModuleID] INTEGER PRIMARY KEY AUTOINCREMENT, 
-    [ModuleCode] TEXT NOT NULL, 
+    [ModuleCode] TEXT NOT NULL UNIQUE, 
     [ModuleName] TEXT NOT NULL)"""
 
 c.execute(create_table)
@@ -35,44 +30,55 @@ for row in db.MODULES:
   rec = (row[0], row[1], row[2])
   c.execute("INSERT INTO modules VALUES (?,?,?);", rec)
 
-create_table = """CREATE TABLE IF NOT EXISTS [subjects] 
-    ([SubjectID] INTEGER PRIMARY KEY AUTOINCREMENT, 
-    [SubjectCode] TEXT NOT NULL, 
-    [SubjectName] TEXT NOT NULL, 
-    [ModuleID] INTEGER NOT NULL,  
-    FOREIGN KEY(SubjectID) REFERENCES Modules(ModuleID) ON DELETE CASCADE)"""
+create_table = """CREATE TABLE IF NOT EXISTS [programs_modules] 
+    ([ProgramID] INTEGER NOT NULL, 
+    [ModuleID] INTEGER NOT NULL, 
+    FOREIGN KEY(ProgramID) REFERENCES [Programs]([ProgramID]) ON DELETE CASCADE,
+    FOREIGN KEY(ModuleID) REFERENCES [Modules]([ModuleID]) ON DELETE CASCADE)"""
 
 c.execute(create_table)
-for row in db.SUBJECTS:
-  rec = (row[0], row[1], row[2], row[3])
-  c.execute("INSERT INTO subjects VALUES (?,?,?,?);", rec)
+for row in db.PROGRAMS_MODULES:
+  rec = (row[0], row[1])
+  c.execute("INSERT INTO programs_modules VALUES (?,?);", rec)
 
-create_table = """CREATE TABLE IF NOT EXISTS [competences] 
-    ([CompetenceID] INTEGER PRIMARY KEY AUTOINCREMENT, 
-    [CompetenceCode] TEXT NOT NULL, 
-    [CompetenceName] TEXT NOT NULL)"""
+# create_table = """CREATE TABLE IF NOT EXISTS [subjects] 
+#     ([SubjectID] INTEGER PRIMARY KEY AUTOINCREMENT, 
+#     [SubjectCode] TEXT NOT NULL, 
+#     [SubjectName] TEXT NOT NULL, 
+#     [ModuleID] INTEGER NOT NULL,  
+#     FOREIGN KEY(SubjectID) REFERENCES Modules(ModuleID) ON DELETE CASCADE)"""
 
-c.execute(create_table)
-for row in db.COMPETENCES:
-  rec = (row[0], row[1], row[2])
-  c.execute("INSERT INTO competences VALUES (?,?,?);", rec)
+# c.execute(create_table)
+# for row in db.SUBJECTS:
+#   rec = (row[0], row[1], row[2], row[3])
+#   c.execute("INSERT INTO subjects VALUES (?,?,?,?);", rec)
 
-create_table = """CREATE TABLE IF NOT EXISTS [indicators] 
-    ([IndicatorID] INTEGER PRIMARY KEY AUTOINCREMENT, 
-    [IndicatorCode] TEXT NOT NULL, 
-    [IndicatorName] TEXT NOT NULL, 
-    [CompetenceID] INTEGER NOT NULL,  
-    FOREIGN KEY(CompetenceID) REFERENCES Competences(CompetenceID) 
-    ON DELETE CASCADE)"""
+# create_table = """CREATE TABLE IF NOT EXISTS [competences] 
+#     ([CompetenceID] INTEGER PRIMARY KEY AUTOINCREMENT, 
+#     [CompetenceCode] TEXT NOT NULL, 
+#     [CompetenceName] TEXT NOT NULL)"""
 
-c.execute(create_table)
-for row in db.INDICATORS:
-  rec = (row[0], row[1], row[2], row[3])
-  c.execute("INSERT INTO indicators VALUES (?,?,?,?);", rec)
+# c.execute(create_table)
+# for row in db.COMPETENCES:
+#   rec = (row[0], row[1], row[2])
+#   c.execute("INSERT INTO competences VALUES (?,?,?);", rec)
 
-c.execute("SELECT * FROM indicators")
-for row in c:
-    pprint.pprint(row)
+# create_table = """CREATE TABLE IF NOT EXISTS [indicators] 
+#     ([IndicatorID] INTEGER PRIMARY KEY AUTOINCREMENT, 
+#     [IndicatorCode] TEXT NOT NULL, 
+#     [IndicatorName] TEXT NOT NULL, 
+#     [CompetenceID] INTEGER NOT NULL,  
+#     FOREIGN KEY(CompetenceID) REFERENCES Competences(CompetenceID) 
+#     ON DELETE CASCADE)"""
+
+# c.execute(create_table)
+# for row in db.INDICATORS:
+#   rec = (row[0], row[1], row[2], row[3])
+#   c.execute("INSERT INTO indicators VALUES (?,?,?,?);", rec)
+
+# c.execute("SELECT * FROM indicators")
+# for row in c:
+#     pprint.pprint(row)
 
 # CREATE TABLE [CustomerCustomerDemo](
 #    [CustomerID]TEXT NOT NULL,
