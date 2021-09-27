@@ -11,9 +11,9 @@ conn = sqlite3.connect(file_DB)
 c = conn.cursor()
 
 create_table = """CREATE TABLE IF NOT EXISTS [programs] 
-    ([ProgramID] INTEGER PRIMARY KEY AUTOINCREMENT, 
-    [ProgramCode] TEXT NOT NULL UNIQUE, 
-    [ProgramName] TEXT NOT NULL)"""
+    ([ID] INTEGER PRIMARY KEY AUTOINCREMENT, 
+    [Code] TEXT NOT NULL UNIQUE, 
+    [Name] TEXT NOT NULL)"""
 
 c.execute(create_table)
 for row in db.PROGRAMS:
@@ -33,7 +33,7 @@ for row in db.MODULES:
 create_table = """CREATE TABLE IF NOT EXISTS [programs_modules] 
     ([ProgramID] INTEGER NOT NULL, 
     [ModuleID] INTEGER NOT NULL, 
-    FOREIGN KEY(ProgramID) REFERENCES [Programs]([ProgramID]) ON DELETE CASCADE,
+    FOREIGN KEY(ProgramID) REFERENCES [Programs]([ID]) ON DELETE CASCADE,
     FOREIGN KEY(ModuleID) REFERENCES [Modules]([ModuleID]) ON DELETE CASCADE)"""
 
 c.execute(create_table)

@@ -1,44 +1,56 @@
 import sqlite3
 from sqlite3 import Error
 
-if __name__ == '__main__':
-    print('Прямой вызов запрещен!')
-
 from . import file_DB
+
+class open_db:  # rонтекстный менеджер
+    def __init__(self, name):
+        self.f = sqlite3.connect(name)
+
+    def __enter__(self):
+        return self.f
+
+    def __exit__(self, *args):
+        self.f.close()
 
 def get_by_id(obj):
     """возвращает учебную программу по переданному ID"""
     try:
-        conn = sqlite3.connect(file_DB)
-        c = conn.cursor()
-        c.execute("SELECT ProgramID, ProgramCode, ProgramName FROM programs WHERE ProgramID = ?", (obj.id, ))
-        ret_fetch = c.fetchone()
-        if not ret_fetch == None:
-            ret = obj
-            obj.code = ret_fetch[1]
-            obj.name = ret_fetch[2]
-        else:
-            ret = None
+        with open_db(file_DB) as conn:
+        # with sqlite3.connect(file_DB) as conn:
+            # conn = sqlite3.connect(file_DB)
+            c = conn.cursor()
+            sqlite_query = "SELECT ID, Code, Name FROM programs WHERE ID = ?"
+            c.execute(sqlite_query, (obj.id, ))
+            ret_fetch = c.fetchone()
+            if not ret_fetch == None:
+                ret = obj
+                obj.code = ret_fetch[1]
+                obj.name = ret_fetch[2]
+            else:
+                ret = None
     except Error:
         print(Error)
-    finally:
-        if conn:
-            conn.close()
+    # finally:
+    #     if conn:
+    #         conn.close()
     return ret
 
 def get_by_code(obj):
     """возвращает учебную программу по переданному коду"""
     try:
-        conn = sqlite3.connect(file_DB)
-        c = conn.cursor()
-        c.execute("SELECT ProgramID, ProgramCode, ProgramName FROM programs WHERE ProgramCode = ?", (obj.code.upper(), ))
-        ret_fetch = c.fetchone()
-        if not ret_fetch == None:
-            ret = obj
-            obj.id = ret_fetch[0]
-            obj.name = ret_fetch[2]
-        else:
-            ret = None
+        with sqlite3.connect(file_DB) as conn:
+            # conn = sqlite3.connect(file_DB)
+            c = conn.cursor()
+            sqlite_query = "SELECT ID, Code, Name FROM programs WHERE Code = ?"
+            c.execute(sqlite_query, (obj.code.upper(), ))
+            ret_fetch = c.fetchone()
+            if not ret_fetch == None:
+                ret = obj
+                obj.id = ret_fetch[0]
+                obj.name = ret_fetch[2]
+            else:
+                ret = None
     except Error:
         print(Error)
     finally:
@@ -51,7 +63,8 @@ def add(obj):
     try:
         conn = sqlite3.connect(file_DB)
         c = conn.cursor()
-        c.execute("INSERT INTO programs(ProgramCode, ProgramName) VALUES (?, ?)", (obj.code,obj.name))
+        sqlite_query = "INSERT INTO programs(Code, Name) VALUES (?, ?)"
+        c.execute(sqlite_query, (obj.code,obj.name))
         conn.commit()
         ret = True
     except Error:
@@ -67,9 +80,9 @@ def delete_by_id(obj):
     try:
         conn = sqlite3.connect(file_DB)
         c = conn.cursor()
-        sqllite_query = """DELETE FROM programs WHERE ProgramID = ?"""
         c.execute("PRAGMA foreign_keys = ON") # Внешние ключи SQLite отключены в целях совместимости. Их нужно включать вручную сразу после каждого подключения к базе данных.
-        c.execute(sqllite_query, (obj.id, ))
+        sqlite_query = """DELETE FROM programs WHERE ID = ?"""
+        c.execute(sqlite_query, (obj.id, ))
         conn.commit()
         ret = True
     except Error:
@@ -85,11 +98,11 @@ def update(obj):
     try:
         conn = sqlite3.connect(file_DB)
         c = conn.cursor()
-        sqllite_query = """UPDATE programs SET ProgramCode = ?, ProgramName = ? WHERE ProgramID = ?"""
-        c.execute(sqllite_query, (obj.code, obj.name, obj.id ))
+        sqlite_query = """UPDATE programs SET Code = ?, Name = ? WHERE ID = ?"""
+        c.execute(sqlite_query, (obj.code, obj.name, obj.id ))
         conn.commit()
         ret = True
-    except Error:
+    except Error as err:
         print(Error)
         ret = False
     finally:
@@ -103,7 +116,8 @@ def get_list():
     try:
         conn = sqlite3.connect(file_DB)
         c = conn.cursor()
-        c.execute("SELECT ProgramID, ProgramCode, ProgramName FROM programs")
+        sqlite_query = "SELECT ID, Code, Name FROM programs"
+        c.execute(sqlite_query)
         ret_fetchall = c.fetchall()
         if not ret_fetchall == None:
             ret = []
@@ -129,8 +143,8 @@ def get_list_modules_program_by_id(id):
     try:
         conn = sqlite3.connect(file_DB)
         c = conn.cursor()
-        sqllite_query = """SELECT ModuleID FROM programs_modules WHERE ProgramID = ?"""
-        c.execute(sqllite_query, (id, ))
+        sqlite_query = """SELECT ID FROM programs_modules WHERE ID = ?"""
+        c.execute(sqlite_query, (id, ))
         ret_fetchall = c.fetchall()
         if not ret_fetchall == None:
             ret = []
@@ -150,3 +164,11 @@ def get_list_modules_program_by_id(id):
         if conn:
             conn.close()
     return ret
+
+
+def test():
+    print(sqlite3.__file__)
+    print('Прямой вызов запрещен!')
+
+if __name__ == '__main__':
+    test()
