@@ -1,7 +1,6 @@
 import os
 import sqlite3
-import pprint
-from DB import sqlite3_create_db as db
+from TEST import test_data as db
 
 file_DB = 'learn.db'
 if os.path.exists(file_DB):
@@ -13,12 +12,13 @@ c = conn.cursor()
 create_table = """CREATE TABLE IF NOT EXISTS [programs] 
     ([ID] INTEGER PRIMARY KEY AUTOINCREMENT, 
     [Code] TEXT NOT NULL UNIQUE, 
-    [Name] TEXT NOT NULL)"""
+    [Name] TEXT NOT NULL,
+    [Level] INTEGER NOT NULL)"""
 
 c.execute(create_table)
 for row in db.PROGRAMS:
-  rec = (row[0], row[1], row[2])
-  c.execute("INSERT INTO programs VALUES (?,?,?);", rec)
+  rec = (row[0], row[1], row[2], row[3])
+  c.execute("INSERT INTO programs VALUES (?,?,?,?);", rec)
 
 create_table = """CREATE TABLE IF NOT EXISTS [modules] 
     ([ModuleID] INTEGER PRIMARY KEY AUTOINCREMENT, 

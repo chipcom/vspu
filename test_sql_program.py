@@ -1,16 +1,21 @@
-from DB import sqlDB_program as program_DB
-from DB import sqlDB_module as module
+# from DB import sqlDB_program as program_DB
+# from DB import sqlDB_module as module
 from CLASS_APP import program as program
+from CLASS_APP import sql_program as sql
 import pprint
 
+# import CLASS_APP
+
 print("Программы обучения:")
-obj=program.Program(id=1)
+obj= program.Program()# program.Program(id=1)
 pprint.pprint(obj.type)
 # pprint.pprint(program.Program.__mro__)
-pprint.pprint(program_DB.get_by_id(obj))
-pprint.pprint(program_DB.get_by_code(program.Program(code = '44.04.01')))
-pprint.pprint(program_DB.get_list())
+pprint.pprint(sql.get_by_id(1))
+pprint.pprint(sql.get_by_code(code = '44.04.01'))
 print()
+pprint.pprint(sql.get_list())
+print()
+pprint.pprint(sql.get_list_by_level(1))
 # pprint.pprint(program_DB.add(program.Program(code = '44.04.99',name='Lets go')))
 # pprint.pprint(program_DB.get_list())
 # print()
